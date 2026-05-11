@@ -1,0 +1,36 @@
+//
+// Created by chiheb on 10/05/2026.
+//
+
+#include "pca9685_pi_hw_controller/i2c_driver.h"
+#include <string>
+#include <fcntl.h>
+#include <stdexcept>
+#include <sys/ioctl.h>
+#include <unistd.h>
+namespace rpi_pca9685_hw_controller {
+    I2cDriver::I2cDriver(uint8_t i2c_bus, uint8_t i2c_address) : i2c_address_(i2c_address) {
+        // Open the I2C bus
+        std::string bus_path = "/dev/i2c-" + std::to_string(i2c_bus);
+        file_descriptor_ = open(bus_path.c_str(), O_RDWR);
+        if (file_descriptor_ < 0) {
+            throw std::runtime_error("Failed to open I2C bus");
+        }
+        if  (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_TENBIT), 0)) {
+            throw std::runtime_error("Failed to set I2C to 7-bit mode");
+        }
+        // Set the I2C slave address
+        if (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_SLAVE), i2c_address_) < 0) {
+            throw std::runtime_error("Failed to set I2C slave address");
+        }
+    }
+
+
+    void I2cDriver::write_byte(uint8_t reg, uint8_t value) {
+        uint8_t buffer[2] {reg, value};
+        if (write(file_descriptor_, buffer, 2) != 2) {
+            //RCL
+            throw std::runtime_error("Failed to write byte to I2C device");
+        }
+    }
+}
