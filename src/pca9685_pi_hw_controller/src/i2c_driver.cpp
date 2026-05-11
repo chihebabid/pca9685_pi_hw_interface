@@ -33,4 +33,21 @@ namespace rpi_pca9685_hw_controller {
             throw std::runtime_error("Failed to write byte to I2C device");
         }
     }
+
+    uint8_t I2cDriver::read_byte(uint8_t reg) {
+        if (write(file_descriptor_, &reg, 1) != 1) {
+            throw std::runtime_error("Failed to write register address to I2C device");
+        }
+        uint8_t value;
+        if (read(file_descriptor_, &value, 1) != 1) {
+            throw std::runtime_error("Failed to read byte from I2C device");
+        }
+        return value;
+    }
+
+    I2cDriver::~I2cDriver() {
+        if (file_descriptor_ >= 0) {
+            close(file_descriptor_);
+        }
+    }
 }

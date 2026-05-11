@@ -14,6 +14,8 @@ namespace rpi_pca9685_hw_controller {
         void write_byte(uint8_t reg, uint8_t value);
 
         uint8_t read_byte(uint8_t reg);
+
+        ~I2cDriver();
     private:
         int file_descriptor_;
         uint8_t i2c_address_;

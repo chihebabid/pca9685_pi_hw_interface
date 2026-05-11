@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.8)
-project(pca9685_pi_hw_controller)
+cmake_minimum_required(VERSION 3.18)
+project(pca9685_pi_hw_controller LANGUAGES CXX)
 cmake_policy(SET CMP0167 OLD)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -14,36 +14,40 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 
 
-add_library(
-        pca9685_pi_hw_controller SHARED
-        src/pca9685_pi_hw_controller/rpi_pca9685_hw_interface.cpp
-        src/pca9685_pi_hw_controller/i2c_driver.cpp
+set(dependencies hardware_interface
+        pluginlib
+        rclcpp
+        rclcpp_lifecycle)
+
+add_library(pi_hw_controller SHARED
+        src/rpi_pca9685_hw_interface.cpp
+        src/i2c_driver.cpp
 )
 
 
 
 target_include_directories(
-        pca9685_pi_hw_controller
-        PUBLIC
-        include
+        pi_hw_controller  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include/pca9685_pi_hw_controller>
 )
 
 ament_target_dependencies(
-        pca9685_pi_hw_controller
-        hardware_interface
-        pluginlib              # ← Ajouté
-        rclcpp
-        rclcpp_lifecycle
+        pi_hw_controller ${dependencies}
 )
 
 # prevent pluginlib from using boost
-target_compile_definitions(pca9685_pi_hw_controller PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
+target_compile_definitions(pi_hw_controller PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 
-pluginlib_export_plugin_description_file(hardware_interface pca9685_hardware_interface.xml)
+pluginlib_export_plugin_description_file(hardware_interface pca9685_pi_hw_controller.xml)
 
 install(
-        TARGETS
-        pca9685_pi_hw_controller
+        DIRECTORY include/
+        DESTINATION include
+)
+
+install(
+        TARGETS pi_hw_controller
+        EXPORT export_${PROJECT_NAME}
         RUNTIME DESTINATION bin
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
@@ -60,17 +64,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+ament_export_targets(export_${PROJECT_NAME})
+ament_export_libraries(pi_hw_controller)
+ament_export_dependencies(${dependencies})
 
-ament_export_include_directories(
-        include
-)
-ament_export_libraries(
-        pca9685_pi_hw_controller
-)
-ament_export_dependencies(m
-        hardware_interface
-        pluginlib
-        rclcpp
-        rclcpp_lifecycle
-)
 ament_package()
