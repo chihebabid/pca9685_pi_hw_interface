@@ -20,8 +20,9 @@ set(dependencies hardware_interface
         rclcpp_lifecycle)
 
 add_library(pi_hw_controller SHARED
-        src/rpi_pca9685_hw_interface.cpp
+        src/pca9685_pi_hw_interface.cpp
         src/i2c_driver.cpp
+        src/pca9685_driver.cpp
 )
 
 
