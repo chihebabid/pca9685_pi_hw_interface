@@ -17,7 +17,9 @@ namespace rpi_pca9685_hw_controller {
             return CallbackReturn::ERROR;
         }
 
-        for (const auto &param : params.hardware_info.hardware_parameters) {
+        auto & info {params.hardware_info};
+        // Fetch PCA9685 global parameters
+        for (const auto &param : info.hardware_parameters) {
             if (param.first == "i2c_bus") {
                 i2c_bus_number_ = std::stoi(param.second);
             } else if (param.first == "i2c_address") {
@@ -27,10 +29,31 @@ namespace rpi_pca9685_hw_controller {
             }
         }
 
-        joint_configs_.resize(info_.joints.size());
-        for (size_t i {}; i < info_.joints.size(); ++i) {
-            joint_configs_[i].channel=stoll(info_.joints[i].parameters["channel"]);
+        // Configure joints
+        // Configuration des joints
+        joints_config_.clear();
+        for (const auto &joint : info.joints) {
+            JointConfig config;
+            config.name = joint.name;
+
+            for (const auto &param : joint.parameters) {
+                if (param.first == "channel") {
+                    config.channel = std::stoi(param.second);
+                } else if (param.first == "min_pulse_us") {
+                    config.min_pulse_us = std::stoi(param.second);
+                } else if (param.first == "max_pulse_us") {
+                    config.max_pulse_us = std::stoi(param.second);
+                } else if (param.first == "min_angle_deg") {
+                    config.min_angle = std::stoi(param.second);
+                } else if (param.first == "max_angle_deg") {
+                    config.max_angle = std::stoi(param.second);
+                }
+            }
+            joints_config_.push_back(config);
         }
+        hw_commands_.resize(info.joints.size());
+        hw_states_.resize(info.joints.size());
+        pca9685_driver_=std::make_unique<Pca9685Driver>(i2c_bus_number_, i2c_address_,pwm_frequency_);
         return CallbackReturn::SUCCESS;
     }
 

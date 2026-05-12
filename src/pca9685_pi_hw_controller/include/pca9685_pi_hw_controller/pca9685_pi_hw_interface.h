@@ -31,7 +31,7 @@ namespace rpi_pca9685_hw_controller {
         uint8_t i2c_bus_number_ {1};
         uint8_t i2c_address_ {0x40};
         uint8_t pwm_frequency_ {50};
-        std::vector<JointConfig> joint_configs_;
+        std::vector<JointConfig> joints_config_;
         std::vector<double> hw_commands_;
         std::vector<double> hw_states_;
 
