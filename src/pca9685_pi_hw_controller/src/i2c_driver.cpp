@@ -16,13 +16,21 @@ namespace rpi_pca9685_hw_controller {
         if (file_descriptor_ < 0) {
             throw std::runtime_error("Failed to open I2C bus");
         }
-        if  (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_TENBIT), 0)) {
-            throw std::runtime_error("Failed to set I2C to 7-bit mode");
-        }
+    }
+
+    I2cDriver& I2cDriver::set_slave() {
         // Set the I2C slave address
         if (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_SLAVE), i2c_address_) < 0) {
             throw std::runtime_error("Failed to set I2C slave address");
         }
+        return *this;
+    }
+
+    I2cDriver& I2cDriver::set_7bits_mode() {
+        if  (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_TENBIT), 0)) {
+            throw std::runtime_error("Failed to set I2C to 7-bit mode");
+        }
+        return *this;
     }
 
 

@@ -11,6 +11,7 @@ using namespace std::chrono_literals;
 namespace rpi_pca9685_hw_controller {
     Pca9685Driver::Pca9685Driver(uint8_t i2c_bus, uint8_t i2c_address,uint8_t freq):i2c_driver_(std::make_unique<I2cDriver>(i2c_bus,
         i2c_address)) {
+        (*i2c_driver_).set_slave().set_7bits_mode();
         // Initialize the PCA9685
         i2c_driver_->write_byte(PCA9685_MODE1, 0x00); // MODE1 register: normal mode
         i2c_driver_->write_byte(0x01, 0x04); // MODE2 register: totem pole output
@@ -49,8 +50,8 @@ namespace rpi_pca9685_hw_controller {
     void Pca9685Driver::set_all_pulse_width(uint16_t pw) {
         i2c_driver_->write_byte(ALL_LED_ON_L, 0);
         i2c_driver_->write_byte(ALL_LED_ON_H, 0);
-        i2c_driver_->write_byte(ALL_LED_OFF_L, off & 0xFF);
-        i2c_driver_->write_byte(ALL_LED_OFF_H, off >> 8);
+        i2c_driver_->write_byte(ALL_LED_OFF_L, pw & 0xFF);
+        i2c_driver_->write_byte(ALL_LED_OFF_H, pw >> 8);
     }
 
     void Pca9685Driver::set_pulsewidth_min_max(uint16_t min, uint16_t max) {
