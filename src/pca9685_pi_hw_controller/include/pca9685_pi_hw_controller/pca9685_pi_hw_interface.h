@@ -20,6 +20,21 @@ namespace rpi_pca9685_hw_controller {
 
         hardware_interface::return_type write(const rclcpp::Time &time, const rclcpp::Duration &period) override;
     private:
+        struct JointConfig {
+            std::string name;
+            uint8_t channel;
+            uint8_t min_angle {};
+            uint8_t max_angle {180};
+            uint16_t min_pulse_us {1000};
+            uint16_t max_pulse_us {2000};
+        };
+        uint8_t i2c_bus_number_ {1};
+        uint8_t i2c_address_ {0x40};
+        uint8_t pwm_frequency_ {50};
+        std::vector<JointConfig> joint_configs_;
+        std::vector<double> hw_commands_;
+        std::vector<double> hw_states_;
+
         std::unique_ptr<Pca9685Driver> pca9685_driver_;
     };
 }

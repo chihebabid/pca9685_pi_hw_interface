@@ -25,8 +25,6 @@ add_library(pi_hw_controller SHARED
         src/pca9685_driver.cpp
 )
 
-
-
 target_include_directories(
         pi_hw_controller  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include/pca9685_pi_hw_controller>
