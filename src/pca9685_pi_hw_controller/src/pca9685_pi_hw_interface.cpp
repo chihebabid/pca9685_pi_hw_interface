@@ -82,6 +82,21 @@ namespace rpi_pca9685_hw_controller {
         return hardware_interface::return_type::OK;
     }
 
+    hardware_interface::return_type Pca9685PiHwInterface::write(const rclcpp::Time&,const rclcpp::Duration&) {
+        for (size_t i = 0; i < joints_config_.size(); ++i) {
+            const auto &config = joints_config_[i];
+
+            double angle = hw_commands_[i];         
+
+            pca9685_driver_->set_servo_degree(config.channel,angle);
+             RCLCPP_ERROR(rclcpp::get_logger("Pca9685PiHwInterface"), "Setting PWM for joint %s on channel %d",config.name.c_str(),
+                 config.channel);
+
+        }
+
+        return hardware_interface::return_type::OK;
+    }
+
 }
 
 #include "pluginlib/class_list_macros.hpp"

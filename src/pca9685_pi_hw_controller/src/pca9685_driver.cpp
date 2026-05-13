@@ -36,7 +36,7 @@ namespace rpi_pca9685_hw_controller {
 
     void Pca9685Driver::set_servo_degree(uint8_t channel, uint8_t degree) {
         degree=std::clamp(degree, static_cast<uint8_t>(0), static_cast<uint8_t>(180));
-        uint16_t pulse_width {static_cast<uint16_t>(((pulse_width_max_ - pulse_width_min_) * degree / 180) + 1000)};
+        uint16_t pulse_width {static_cast<uint16_t>(((pulse_width_max_ - pulse_width_min_) * degree / 180) + pulse_width_min_)};
         set_pulse_width(channel,pulse_width);
     }
 
