@@ -27,7 +27,7 @@ namespace rpi_pca9685_hw_controller {
     }
 
     I2cDriver& I2cDriver::set_7bits_mode() {
-        if  (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_TENBIT), 0)) {
+        if  (ioctl(file_descriptor_, static_cast<long unsigned int>(I2cOptions::I2C_TENBIT), 0)<0) {
             throw std::runtime_error("Failed to set I2C to 7-bit mode");
         }
         return *this;

@@ -3,6 +3,7 @@
 //
 #include "pca9685_pi_hw_controller/pca9685_pi_hw_interface.h"
 #include "rclcpp/rclcpp.hpp"
+#include <stdexcept>
 
 namespace rpi_pca9685_hw_controller {
 
@@ -31,9 +32,9 @@ namespace rpi_pca9685_hw_controller {
 
         // Configure joints
         // Configuration des joints
-        joints_config_.clear();
+        joints_.clear();
         for (const auto &joint : info.joints) {
-            JointConfig config;
+            JointConfigData config;
             config.name = joint.name;
 
             for (const auto &param : joint.parameters) {
@@ -49,10 +50,9 @@ namespace rpi_pca9685_hw_controller {
                     config.max_angle = std::stoi(param.second);
                 }
             }
-            joints_config_.push_back(config);
+            joints_.push_back(config);
         }
-        hw_commands_.resize(info.joints.size());
-        hw_states_.resize(info.joints.size());
+
         pca9685_driver_=std::make_unique<Pca9685Driver>(i2c_bus_number_, i2c_address_,pwm_frequency_);
         return CallbackReturn::SUCCESS;
     }
@@ -60,8 +60,8 @@ namespace rpi_pca9685_hw_controller {
     std::vector<hardware_interface::StateInterface> Pca9685PiHwInterface::export_state_interfaces() {
         RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), "Export state interfaces");
         std::vector<hardware_interface::StateInterface> state_interfaces;
-        for (size_t i {}; i < joints_config_.size(); ++i) {
-            state_interfaces.emplace_back(joints_config_[i].name, "position", &hw_states_[i]);
+        for (auto & joint : joints_) {
+            state_interfaces.emplace_back(joint.name, "position", &joint.data.hw_state);
         }
         return state_interfaces;
     }
@@ -69,36 +69,38 @@ namespace rpi_pca9685_hw_controller {
     std::vector<hardware_interface::CommandInterface> Pca9685PiHwInterface::export_command_interfaces() {
         RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), "Export command interfaces");
         std::vector<hardware_interface::CommandInterface> command_interfaces;
-        for (size_t i {}; i < joints_config_.size(); ++i) {
-            command_interfaces.emplace_back(joints_config_[i].name, "position", &hw_commands_[i]);
+        for (auto & joint : joints_) {
+            command_interfaces.emplace_back(joint.name, "position", &joint.data.hw_command);
         }
         return command_interfaces;
     }
 
     hardware_interface::return_type Pca9685PiHwInterface::read(const rclcpp::Time &,const rclcpp::Duration &) {
-        for (size_t i{}; i < joints_config_.size(); ++i) {
-            hw_states_[i] = hw_commands_[i];
+        for (auto & joint : joints_) {
+            joint.data.hw_state=joint.data.hw_command;
         }
         return hardware_interface::return_type::OK;
     }
 
     hardware_interface::return_type Pca9685PiHwInterface::write(const rclcpp::Time&,const rclcpp::Duration&) {
-        for (size_t i = 0; i < joints_config_.size(); ++i) {
-            const auto &config = joints_config_[i];
+        for (const auto & joint : joints_) {
 
-            double angle = hw_commands_[i];         
-
-            pca9685_driver_->set_servo_degree(config.channel,angle);
-             RCLCPP_ERROR(rclcpp::get_logger("Pca9685PiHwInterface"), "Setting PWM for joint %s on channel %d",config.name.c_str(),
-                 config.channel);
-
+            double angle = joint.data.hw_command;
+            try {
+                pca9685_driver_->set_servo_degree(joint.channel,angle);
+                RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), "Setting PWM for joint %s on channel %d",joint.name.c_str(),
+                    joint.channel);
+            }
+            catch (std::runtime_error &e) {
+                RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), " Error setting PWM for joint %s on channel %d",joint.name
+                    .c_str(),joint.channel);
+                return hardware_interface::return_type::ERROR;
+            }
         }
-
         return hardware_interface::return_type::OK;
     }
 
 }
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(
-    rpi_pca9685_hw_controller::Pca9685PiHwInterface, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(rpi_pca9685_hw_controller::Pca9685PiHwInterface, hardware_interface::SystemInterface)

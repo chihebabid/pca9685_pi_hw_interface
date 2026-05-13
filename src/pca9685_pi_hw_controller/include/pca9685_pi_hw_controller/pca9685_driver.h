@@ -23,6 +23,7 @@ namespace rpi_pca9685_hw_controller {
         void set_pulsewidth_min_max(uint16_t min, uint16_t max);
         void set_pulse_width(uint8_t channel, uint16_t pw);
         void set_all_pulse_width(uint16_t pw);
+        ~Pca9685Driver()=default;
     private:
         void set_pwm_frequency(uint8_t freq);
         std::unique_ptr<I2cDriver> i2c_driver_;
