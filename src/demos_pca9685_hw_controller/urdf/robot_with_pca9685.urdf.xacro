@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pca9685_robot">
+
+  <ros2_control name="PCA9685System" type="system">
+    <hardware plugin="rpi_pca9685_hw_controller/Pca9685PiHwInterface">
+      <param name="i2c_bus">1</param>
+      <param name="i2c_address">0x40</param>
+      <param name="pwm_frequency">50</param>
+    </hardware>
+
+    <!-- Joint 1: Servo sur canal 0 -->
+    <joint name="servo_pan">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <param name="channel">0</param>
+      <param name="min_pulse_us">500</param>
+      <param name="max_pulse_us">2500</param>
+      <param name="min_angle_deg">0</param>
+      <param name="max_angle_deg">180</param>
+    </joint>
+
+    <!-- Joint 2: Servo sur canal 1 -->
+    <joint name="servo_tilt">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <param name="channel">1</param>
+      <param name="min_pulse_us">1000</param>
+      <param name="max_pulse_us">2000</param>
+      <param name="min_angle_deg">0</param>
+      <param name="max_angle_deg">180</param>
+    </joint>
+
+    <!-- Joint 3: Servo sur canal 2 -->
+    <joint name="gripper">
+      <command_interface name="position"/>
+      <state_interface name="position"/>
+      <param name="channel">2</param>
+      <param name="min_pulse_us">600</param>
+      <param name="max_pulse_us">2400</param>
+      <param name="min_angle_deg">0</param>
+      <param name="max_angle_deg">90</param>
+    </joint>
+  </ros2_control>
+</robot>
