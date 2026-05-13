@@ -26,5 +26,4 @@ Key design decisions: Uses ros2_control framework for standardized hardware abst
 - **Error handling**: Throws `std::runtime_error` on I2C failures; returns `ERROR` from write on PWM set failures
 - **I2C operations**: Uses ioctl for slave addressing and 7-bit mode; writes/reads bytes for register access (see `I2cDriver::write_byte`/`read_byte`)
 
-Reference files: `src/pca9685_pi_hw_interface.cpp` (main logic), `include/pca9685_pi_hw_controller/pca9685_driver.h` (PWM API), `pca9685_pi_hw_controller.xml` (plugin description)</content>
-<parameter name="filePath">/home/chiheb/workspace_ros_group/ws_ros_pi/src/pca9685_pi_hw_controller/AGENTS.md
+
