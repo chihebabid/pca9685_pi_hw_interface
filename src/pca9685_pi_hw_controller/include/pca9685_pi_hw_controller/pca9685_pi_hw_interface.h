@@ -37,8 +37,8 @@ namespace rpi_pca9685_hw_controller {
         uint8_t i2c_address_ {0x40};
         uint8_t pwm_frequency_ {50};
         std::vector<JointConfigData> joints_;
-
         std::unique_ptr<Pca9685Driver> pca9685_driver_;
+        double angle_to_pulse_width(const JointConfigData&  joint) const;
     };
 }
 #endif

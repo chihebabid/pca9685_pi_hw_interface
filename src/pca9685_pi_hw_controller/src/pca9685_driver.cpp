@@ -34,11 +34,6 @@ namespace rpi_pca9685_hw_controller {
         i2c_driver_->write_byte(PCA9685_MODE1, oldmode | 0xa0);
     }
 
-    void Pca9685Driver::set_servo_degree(uint8_t channel, uint8_t degree) {
-        degree=std::clamp(degree, static_cast<uint8_t>(0), static_cast<uint8_t>(180));
-        uint16_t pulse_width {static_cast<uint16_t>(((pulse_width_max_ - pulse_width_min_) * degree / 180) + pulse_width_min_)};
-        set_pulse_width(channel,pulse_width);
-    }
 
     void Pca9685Driver::set_pulse_width(uint8_t channel,uint16_t pw) {
         i2c_driver_->write_byte(LED0_ON_L+4*channel, 0);
@@ -54,8 +49,4 @@ namespace rpi_pca9685_hw_controller {
         i2c_driver_->write_byte(ALL_LED_OFF_H, pw >> 8);
     }
 
-    void Pca9685Driver::set_pulsewidth_min_max(uint16_t min, uint16_t max) {
-        pulse_width_min_ = min;
-        pulse_width_max_ = max;
-    }
 }

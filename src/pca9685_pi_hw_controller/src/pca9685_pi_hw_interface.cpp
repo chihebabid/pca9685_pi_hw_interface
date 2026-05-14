@@ -4,6 +4,7 @@
 #include "pca9685_pi_hw_controller/pca9685_pi_hw_interface.h"
 #include "rclcpp/rclcpp.hpp"
 #include <stdexcept>
+#include <algorithm>
 
 namespace rpi_pca9685_hw_controller {
 
@@ -87,7 +88,7 @@ namespace rpi_pca9685_hw_controller {
 
             double angle = joint.data.hw_command;
             try {
-                pca9685_driver_->set_servo_degree(joint.channel,angle);
+                pca9685_driver_->set_pulse_width(joint.channel,angle_to_pulse_width(joint));
                 RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), "Setting PWM for joint %s on channel %d",joint.name.c_str(),
                     joint.channel);
             }
@@ -98,6 +99,11 @@ namespace rpi_pca9685_hw_controller {
             }
         }
         return hardware_interface::return_type::OK;
+    }
+
+    double Pca9685PiHwInterface::angle_to_pulse_width(const JointConfigData&  joint) const {
+        double degree {std::clamp<double>(joint.data.hw_command, joint.min_angle, joint.max_angle)};
+        return ((joint.max_pulse_us - joint.min_pulse_us) * degree / (joint.max_angle-joint.min_angle)) + joint.min_pulse_us;
     }
 
 }
