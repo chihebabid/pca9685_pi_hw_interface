@@ -1,4 +1,4 @@
-<library path="pca9685_hardware_interface">
+<library path="pca9685_pi_hw_controller">
     <class name="rpi_pca9685_hw_controller/RpiPca9685HwInterface"
            type="rpi_pca9685_hw_controller::RpiPca9685HwInterface"
            base_class_type="hardware_interface::SystemInterface">
