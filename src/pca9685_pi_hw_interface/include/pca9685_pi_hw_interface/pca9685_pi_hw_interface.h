@@ -1,6 +1,6 @@
 #ifndef RPI_PCA9685_HW_CONTROLLER_H
 #define RPI_PCA9685_HW_CONTROLLER_H
-#include "pca9685_pi_hw_controller/pca9685_driver.h"
+#include "pca9685_pi_hw_interface/pca9685_driver.h"
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/handle.hpp>
 #include <hardware_interface/types/hardware_interface_return_values.hpp>

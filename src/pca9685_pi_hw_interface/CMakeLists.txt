@@ -14,6 +14,7 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 
 
+
 set(dependencies hardware_interface
         pluginlib
         rclcpp
@@ -27,7 +28,7 @@ add_library(pi_hw_controller SHARED
 
 target_include_directories(
         pi_hw_controller  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include/pca9685_pi_hw_controller>
+        $<INSTALL_INTERFACE:include/pca9685_pi_hw_interface>
 )
 
 ament_target_dependencies(
@@ -37,7 +38,7 @@ ament_target_dependencies(
 # prevent pluginlib from using boost
 target_compile_definitions(pi_hw_controller PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 
-pluginlib_export_plugin_description_file(hardware_interface pca9685_pi_hw_controller.xml)
+pluginlib_export_plugin_description_file(hardware_interface pca9685_pi_hw_interface.xml)
 
 install(
         DIRECTORY include/

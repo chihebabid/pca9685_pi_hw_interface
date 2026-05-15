@@ -1,7 +1,7 @@
 //
 // Created by chiheb on 10/05/2026.
 //
-#include "pca9685_pi_hw_controller/pca9685_pi_hw_interface.h"
+#include "pca9685_pi_hw_interface/pca9685_pi_hw_interface.h"
 #include "rclcpp/rclcpp.hpp"
 #include <stdexcept>
 #include <algorithm>

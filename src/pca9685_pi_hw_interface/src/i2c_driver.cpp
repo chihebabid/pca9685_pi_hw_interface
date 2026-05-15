@@ -2,7 +2,7 @@
 // Created by chiheb on 10/05/2026.
 //
 
-#include "pca9685_pi_hw_controller/i2c_driver.h"
+#include "pca9685_pi_hw_interface/i2c_driver.h"
 #include <string>
 #include <fcntl.h>
 #include <stdexcept>
