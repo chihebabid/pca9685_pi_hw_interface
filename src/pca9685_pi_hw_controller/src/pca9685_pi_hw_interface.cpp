@@ -86,7 +86,6 @@ namespace rpi_pca9685_hw_controller {
     hardware_interface::return_type Pca9685PiHwInterface::write(const rclcpp::Time&,const rclcpp::Duration&) {
         for (const auto & joint : joints_) {
 
-            double angle = joint.data.hw_command;
             try {
                 pca9685_driver_->set_pulse_width(joint.channel,angle_to_pulse_width(joint));
                 RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), "Setting PWM for joint %s on channel %d",joint.name.c_str(),
