@@ -6,7 +6,7 @@
 #include <hardware_interface/types/hardware_interface_return_values.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-namespace rpi_pca9685_hw_controller {
+namespace rpi_pca9685_hw_interface {
     struct Pca9685PiHwInterface : public hardware_interface::SystemInterface {
         Pca9685PiHwInterface() = default;
 

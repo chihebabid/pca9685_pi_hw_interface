@@ -6,11 +6,12 @@
 #include <stdexcept>
 #include <algorithm>
 
-namespace rpi_pca9685_hw_controller {
+namespace rpi_pca9685_hw_interface {
 
 
     hardware_interface::CallbackReturn Pca9685PiHwInterface::on_init(const hardware_interface::HardwareComponentInterfaceParams & params)
     {
+        RCLCPP_DEBUG(rclcpp::get_logger("Pca9685PiHwInterface"), "on_init()");
         if (hardware_interface::SystemInterface::on_init(params) != CallbackReturn::SUCCESS) {
             return CallbackReturn::ERROR;
         }
@@ -108,4 +109,4 @@ namespace rpi_pca9685_hw_controller {
 }
 
 #include "pluginlib/class_list_macros.hpp"
-PLUGINLIB_EXPORT_CLASS(rpi_pca9685_hw_controller::Pca9685PiHwInterface, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(rpi_pca9685_hw_interface::Pca9685PiHwInterface, hardware_interface::SystemInterface)

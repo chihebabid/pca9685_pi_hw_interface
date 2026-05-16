@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>pca9685_pi_hw_controller</name>
+  <name>pca9685_pi_hw_interface</name>
   <version>0.0.1</version>
   <description>ROS2 Hardware Interface for Raspberry Pi to control PCA9685 I2C PWM driver</description>
   <maintainer email="chiheb.abid@gmail.com">chiheb</maintainer>
@@ -19,5 +19,6 @@
 
   <export>
     <build_type>ament_cmake</build_type>
+    <hardware_interface>pca9685_pi_hw_interface.xml</hardware_interface>
   </export>
 </package>

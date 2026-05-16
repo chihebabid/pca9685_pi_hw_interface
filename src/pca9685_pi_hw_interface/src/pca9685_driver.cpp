@@ -8,9 +8,10 @@
 #include <algorithm>
 
 using namespace std::chrono_literals;
-namespace rpi_pca9685_hw_controller {
+namespace rpi_pca9685_hw_interface {
     Pca9685Driver::Pca9685Driver(uint8_t i2c_bus, uint8_t i2c_address,uint8_t freq):i2c_driver_(std::make_unique<I2cDriver>(i2c_bus,
         i2c_address)) {
+
         (*i2c_driver_).set_slave().set_7bits_mode();
         // Initialize the PCA9685
         i2c_driver_->write_byte(PCA9685_MODE1, 0x00); // MODE1 register: normal mode

@@ -8,9 +8,10 @@
 #include <stdexcept>
 #include <sys/ioctl.h>
 #include <unistd.h>
-namespace rpi_pca9685_hw_controller {
+namespace rpi_pca9685_hw_interface {
     I2cDriver::I2cDriver(uint8_t i2c_bus, uint8_t i2c_address) : i2c_address_(i2c_address) {
         // Open the I2C bus
+
         std::string bus_path = "/dev/i2c-" + std::to_string(i2c_bus);
         file_descriptor_ = open(bus_path.c_str(), O_RDWR);
         if (file_descriptor_ < 0) {

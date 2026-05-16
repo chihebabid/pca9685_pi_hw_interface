@@ -9,7 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(xacro REQUIRED)
 find_package(controller_manager REQUIRED)
-#find_package(pi_hw_controller REQUIRED)
+
 
 install(DIRECTORY urdf launch config
         DESTINATION share/${PROJECT_NAME}

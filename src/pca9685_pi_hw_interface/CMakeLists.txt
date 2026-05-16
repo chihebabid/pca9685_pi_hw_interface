@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(pca9685_pi_hw_controller LANGUAGES CXX)
+project(pca9685_pi_hw_interface LANGUAGES CXX)
 cmake_policy(SET CMP0167 OLD)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -20,23 +20,23 @@ set(dependencies hardware_interface
         rclcpp
         rclcpp_lifecycle)
 
-add_library(pi_hw_controller SHARED
+add_library(pca9685_pi_hw_interface SHARED
         src/pca9685_pi_hw_interface.cpp
         src/i2c_driver.cpp
         src/pca9685_driver.cpp
 )
 
 target_include_directories(
-        pi_hw_controller  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        pca9685_pi_hw_interface  PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include/pca9685_pi_hw_interface>
 )
 
 ament_target_dependencies(
-        pi_hw_controller ${dependencies}
+        pca9685_pi_hw_interface ${dependencies}
 )
 
 # prevent pluginlib from using boost
-target_compile_definitions(pi_hw_controller PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
+target_compile_definitions(pca9685_pi_hw_interface PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 
 pluginlib_export_plugin_description_file(hardware_interface pca9685_pi_hw_interface.xml)
 
@@ -46,7 +46,7 @@ install(
 )
 
 install(
-        TARGETS pi_hw_controller
+        TARGETS pca9685_pi_hw_interface
         EXPORT export_${PROJECT_NAME}
         RUNTIME DESTINATION bin
         ARCHIVE DESTINATION lib
@@ -65,7 +65,7 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_targets(export_${PROJECT_NAME})
-ament_export_libraries(pi_hw_controller)
+ament_export_libraries(pca9685_pi_hw_interface)
 ament_export_dependencies(${dependencies})
 
 ament_package()

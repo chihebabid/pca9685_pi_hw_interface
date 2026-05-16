@@ -7,7 +7,7 @@
 #include "i2c_driver.h"
 #include <memory>
 #include <vector>
-namespace rpi_pca9685_hw_controller {
+namespace rpi_pca9685_hw_interface {
     constexpr uint8_t PCA9685_MODE1  {0x0};
     constexpr uint8_t  PCA9685_PRESCALE {0xFE};
     constexpr uint8_t LED0_ON_L {0x6};

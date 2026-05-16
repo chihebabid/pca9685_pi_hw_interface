@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pca9685_robot">
 
   <ros2_control name="PCA9685System" type="system">
-    <hardware plugin="rpi_pca9685_hw_controller/Pca9685PiHwInterface">
+    <hardware plugin="rpi_pca9685_hw_interface/Pca9685PiHwInterface">
       <param name="i2c_bus">1</param>
       <param name="i2c_address">0x40</param>
       <param name="pwm_frequency">50</param>

@@ -6,7 +6,7 @@
 #define WS_ROS_PI_I2C_DRIVER_H
 #include <cstdint>
 
-namespace rpi_pca9685_hw_controller {
+namespace rpi_pca9685_hw_interface {
 
     struct I2cDriver {
         I2cDriver(uint8_t i2c_bus, uint8_t i2c_address);
