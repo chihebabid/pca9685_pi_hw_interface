@@ -1,27 +1,41 @@
-## Architecture Overview
-This is a ROS2 hardware interface package for Raspberry Pi, implementing `hardware_interface::SystemInterface` to control PCA9685 16-channel PWM driver over I2C. Core components include:
-- **Hardware interface**: `Pca9685PiHwInterface` exports command/state interfaces for servo joints, mapping position commands to PWM pulses
-- **PWM driver**: `Pca9685Driver` handles PCA9685 initialization, frequency setting, and servo angle-to-pulse conversion
-- **I2C driver**: `I2cDriver` provides low-level I2C communication using Linux ioctl
 
-Key design decisions: Uses ros2_control framework for standardized hardware abstraction; supports up to 16 joints (channels); default PWM frequency 50Hz for servos.
+Architecture Overview
+---------------------
+This package provides a ROS2 `hardware_interface::SystemInterface` implementation for Raspberry Pi to control a PCA9685 16-channel PWM driver over I2C.
 
-## Build and Development Workflow
-- **Dependencies**: Requires `hardware_interface`, `pluginlib`, `rclcpp_lifecycle` from ROS2 Jazzy; no external libraries beyond standard Linux I2C
-- **Plugin export**: Uses `pluginlib_export_plugin_description_file` for ros2_control discovery (see `pca9685_pi_hw_controller.xml`)
-- **Testing**: No specific tests; integrate with ros2_control controllers for validation
+Core components:
+- `Pca9685PiHwInterface` (ros2_control SystemInterface): exports position command/state interfaces per joint, reads hardware and joint parameters, performs angle→pulse conversion, and implements the read/write lifecycle.
+- `Pca9685Driver`: low-level PCA9685 register access and utilities (initialize, set PWM frequency, write LED registers, sleep/wake, helpers such as stop_channel and set_all_pulse_width).
+- `I2cDriver`: minimal Linux I2C wrapper using /dev/i2c-N with ioctl for slave addressing and 7-bit mode.
 
-## Key Dependencies and Integrations
-- **ROS2 Jazzy**: `hardware_interface` for SystemInterface, `pluginlib` for dynamic loading, `rclcpp_lifecycle` for lifecycle management
-- **Hardware**: PCA9685 I2C PWM driver (default address 0x40); Raspberry Pi I2C bus (default /dev/i2c-1)
-- **Integration**: Exports as plugin for ros2_control; joints configured via URDF parameters (channel, pulse limits, angle ranges)
+Design notes: the package separates responsibilities — conversion logic lives in the hardware interface, while the driver only performs register/pulse writes. Default PWM frequency is 50 Hz and up to 16 channels are supported.
 
-## Code Patterns and Conventions
-- **Class structure**: `Pca9685PiHwInterface` inherits `SystemInterface`; uses `JointConfigData` struct for per-joint config (see `pca9685_pi_hw_interface.h`)
-- **Parameter parsing**: `on_init` reads hardware parameters (i2c_bus, i2c_address, pwm_frequency) and joint parameters (channel, min/max pulse/angle)
-- **Interface export**: `export_command_interfaces`/`export_state_interfaces` create handles for "position" interface type
-- **Read/write cycle**: `read` mirrors command to state (no feedback); `write` converts angle commands to PWM via `Pca9685Driver::set_servo_degree`
-- **Error handling**: Throws `std::runtime_error` on I2C failures; returns `ERROR` from write on PWM set failures
-- **I2C operations**: Uses ioctl for slave addressing and 7-bit mode; writes/reads bytes for register access (see `I2cDriver::write_byte`/`read_byte`)
+Build & development
+-------------------
+- Dependencies: ROS2 Jazzy packages (`hardware_interface`, `pluginlib`, `rclcpp`, `rclcpp_lifecycle`).
+- Build: standard ament_cmake.
+- Plugin export: the package exports `pca9685_pi_hw_interface.xml` via CMake so `ros2_control_node` can load the plugin at runtime.
 
+Key integrations
+----------------
+- ROS2 ros2_control: hardware is configured from the URDF/xacro `ros2_control` block or from `controllers.yaml`.
+- Hardware: PCA9685 at I2C address 0x40 by default; Raspberry Pi I2C bus typically `/dev/i2c-1`.
+
+Code patterns & conventions
+-------------------------
+- Class responsibilities:
+  - `I2cDriver`: open/close bus, read/write bytes, throws std::runtime_error on failures.
+  - `Pca9685Driver`: register-level helpers and bulk operations; does not map angles to pulse widths.
+  - `Pca9685PiHwInterface`: reads parameters in `on_init`, fills `JointConfigData`, exports interfaces, implements `read` and `write`, and contains `angle_to_pulse_width(const JointConfigData&)`.
+- Parameter expectations: for each joint, provide `channel`, `min_pulse_us`, `max_pulse_us`, `min_angle_deg`, and `max_angle_deg` in the URDF `ros2_control` joint parameters.
+- Read/write behavior: `read` copies commands to states (no sensor feedback). `write` converts commanded position to pulse width then calls `Pca9685Driver::set_pulse_width`.
+- Error handling: I2C failures propagate as exceptions; the hardware interface catches runtime errors and returns `hardware_interface::return_type::ERROR` from `write`.
+
+Important files
+---------------
+- `include/pca9685_pi_hw_interface/pca9685_pi_hw_interface.h` — `Pca9685PiHwInterface` and `JointConfigData` definition.
+- `src/pca9685_pi_hw_interface.cpp` — ROS2 hardware interface implementation.
+- `include/pca9685_pi_hw_interface/pca9685_driver.h` and `src/pca9685_driver.cpp` — PCA9685 helpers.
+- `include/pca9685_pi_hw_interface/i2c_driver.h` and `src/i2c_driver.cpp` — Linux I2C wrapper.
+- `pca9685_pi_hw_interface.xml` — pluginlib description installed to share directory.
 
